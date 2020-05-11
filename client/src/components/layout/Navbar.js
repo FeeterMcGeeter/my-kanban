@@ -1,11 +1,63 @@
-import React from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import AuthContext from '../../context/auth/authContext'
 
-const Navbar = () => {
+const Navbar = ({ title }) => {
+    const authContext = useContext(AuthContext);
+
+    const { isAuthenticated, logout, user, loadUser } = authContext;
+
+    useEffect(() => {
+        loadUser();
+        // eslint-disable-next-line
+    }, []);
+
+    const onLogout = () => {
+        logout();
+    };
+
+    const authLinks = (
+        <Fragment>
+            <li>Hello {user && user.name}</li>
+            <li>
+                <a href="#!" onClick={onLogout}>
+                    <i className="fas fa-sign-out-alt" />{' '}
+                    <span>Logout</span>
+                </a>
+            </li>
+        </Fragment>
+    );
+
+    const guestLinks = (
+        <Fragment>
+            <li>
+                <Link to='/register'>Register</Link>
+            </li>
+            <li>
+                <Link to='/login'>Login</Link>
+            </li>
+        </Fragment>
+    );
+
     return (
-        <div>
-            Navbar
+        <div className='navbar'>
+            <h1>
+                <Link to='/'>{title}</Link>
+            </h1>
+            <ul>
+                {isAuthenticated ? authLinks : guestLinks}
+            </ul>
         </div>
-    )
+    );
+};
+
+Navbar.propTypes = {
+    title: PropTypes.string.isRequired
+};
+
+Navbar.defaultProps = {
+    title: 'My Kanban'
 };
 
 export default Navbar;
